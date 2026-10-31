@@ -1,0 +1,6 @@
+# Não publicar documentos privados no repositório
+*.pdf
+!tests/amostra_teste.pdf
+.DS_Store
+node_modules/
+__pycache__/
