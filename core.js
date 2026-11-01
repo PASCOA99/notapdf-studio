@@ -1,0 +1,105 @@
+/** Helpers without external dependencies; also used in smoke tests. */
+export const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+export const newId = () => 'n' + Array.from(crypto.getRandomValues(new Uint8Array(8)), b => b.toString(16).padStart(2,'0')).join('');
+export function utf8ToBase64(s) {
+  const bytes = new TextEncoder().encode(s); let binary = '';
+  for (let i=0;i<bytes.length;i+=8192) binary += String.fromCharCode(...bytes.subarray(i,i+8192));
+  return btoa(binary);
+}
+export function base64ToUtf8(s) {
+  const binary = atob(s); const bytes = new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+/** Backward-compatible metadata reader. V1/V2 were encoded as a huge Base64 PDFString.
+ * V3 is an embedded PDF stream with /FlateDecode, avoiding PDFString stack and
+ * reducing repeated XML/HTML markup. No file is uploaded to a server. */
+export async function readProjectMetadata(entry) {
+  if (!entry) return null;
+  if (typeof entry.getContents === 'function') {
+    const contents=entry.getContents();
+    let bytes;
+    // A v3 stream is always deflated. PDFRawStream.getContents() returns encoded bytes.
+    if (typeof DecompressionStream === 'function') {
+      const stream=new Blob([contents]).stream().pipeThrough(new DecompressionStream('deflate'));
+      bytes=new Uint8Array(await new Response(stream).arrayBuffer());
+    } else throw new Error('Seu navegador não suporta descompactação de metadados PDF. Atualize o navegador.');
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  if (typeof entry.asString !== 'function') throw new Error('Formato NPSData não reconhecido.');
+  return JSON.parse(base64ToUtf8(entry.asString()));
+}
+export function writeProjectMetadata(doc,project) {
+  const {PDFName}=window.PDFLib;
+  const bytes=new TextEncoder().encode(JSON.stringify(project));
+  // PDF stream values must be indirect objects, not embedded directly in the catalog.
+  return doc.context.register(doc.context.flateStream(bytes,{Type:PDFName.of('NPSMetadata')}));
+}
+export function normalizeNote(n, totalPages) {
+  if (!n || !Number.isInteger(n.page) || n.page < 1 || n.page > totalPages) return null;
+  return {
+    id: /^[a-zA-Z0-9_-]{1,64}$/.test(n.id || '') ? n.id : newId(),
+    page: n.page, x: clamp(Number(n.x)||0, 0.02, .98),
+    y: clamp(Number(n.y)||0, 0.02, .98),
+    title: String(n.title || 'Nota').slice(0,100),
+    // Do not silently truncate embedded Base64 images when reopening exported PDFs.
+    html: String(n.html || '<p></p>'),
+    bg: /^#[a-fA-F0-9]{6}$/.test(n.bg||'')?n.bg:'#fffdf4',
+    border: /^#[a-fA-F0-9]{6}$/.test(n.border||'')?n.border:'#c7b18a',
+    width:clamp(Number(n.width)||340,200,520),
+    height:clamp(Number(n.height)||300,170,650),
+    hover:n.hover!==false, click:n.click!==false
+  };
+}
+export function popupCoordinates(anchorX, anchorTop, pageW, pageH, w, h) {
+  const xx = clamp(anchorX-w-12, 6, Math.max(6,pageW-w-6));
+  const yy = clamp(pageH-anchorTop-h/2, 6, Math.max(6,pageH-h-6));
+  return { x:xx, y:yy };
+}
+/** Acrobat field rectangles use [left, top, right, bottom] in page points.
+ * While the note is closed its widget MUST stay outside the page: some viewers
+ * intercept text selection through an invisible/hidden AcroForm widget.
+ * Keeping the same width/height also preserves the cached image appearance. */
+export function popupFieldRects(x, y, width, height) {
+  const sane = n => Math.round(Number(n) * 1000) / 1000;
+  const w=sane(width),h=sane(height),left=sane(x),bottom=sane(y);
+  const margin=48;
+  return {
+    visible:[left,sane(bottom+h),sane(left+w),bottom],
+    parked:[sane(-w-margin),-margin,-margin,sane(-h-margin)]
+  };
+}
+/** Acrobat JavaScript for the icon and the pop-up's close action.
+ * The bounding rectangle only returns to the PDF page while the pop-up is OPEN.
+ * No large, invisible interactive rectangle is left over selectable page text. */
+export function makeActions(id, hover, click, rects=null) {
+  const popup = `NPS_${id}_popup`;
+  const state = `NPS_${id}_state`;
+  const field = `(this.getField(${JSON.stringify(popup)}))`;
+  const stateField = `(this.getField(${JSON.stringify(state)}))`;
+  // Chromium/PDFium supports Acrobat-JavaScript field.rect/display, but identifies
+  // itself as viewerType="pdfium". Version 1.4.3 mistakenly blocked all actions
+  // unless viewerType was Adobe Reader/Exchange. Instead, try the geometry API
+  // and only reveal when the field actually moves to its on-page coordinates.
+  // Closed popups must always be hidden AND parked off-page to avoid invisible
+  // form hitboxes intercepting PDF text selection.
+  const reveal = rects
+    ? `try{p.rect=${JSON.stringify(rects.visible)};var r=p.rect;` +
+      `if(r&&r.length===4&&Math.abs(r[0]-${rects.visible[0]})<1.1&&` +
+      `Math.abs(r[1]-${rects.visible[1]})<1.1&&` +
+      `Math.abs(r[2]-${rects.visible[2]})<1.1&&` +
+      `Math.abs(r[3]-${rects.visible[3]})<1.1){p.display=display.visible;}` +
+      `else{p.display=display.hidden;p.rect=${JSON.stringify(rects.parked)};}}` +
+      `catch(ex){try{p.display=display.hidden;p.rect=${JSON.stringify(rects.parked)};}catch(ignore){}}`
+    : 'p.display=display.visible;';
+  const conceal = 'p.display=display.hidden;' + (rects ? `try{p.rect=${JSON.stringify(rects.parked)};}catch(ex){}` : '');
+  const enter = hover ? `var p=${field};if(p){${reveal}}` : '';
+  const exit = hover ? `var p=${field},s=${stateField};if(p&&(!s||s.value!=="1")){${conceal}}` : '';
+  const down = click ? `var p=${field},s=${stateField};if(p&&s){`+
+    `if(s.value==="1"){s.value="0";${conceal}}`+
+    `else{${reveal}if(p.display===display.visible)s.value="1";else s.value="0";}}` : '';
+  const close = `var p=${field},s=${stateField};if(p){if(s)s.value="0";${conceal}}`;
+
+  return { enter, exit, down, close };
+}
+export function printableName(name) { return (name || 'documento').replace(/\.pdf$/i,'').replace(/[^a-z0-9_áàãâéêíóôõúç -]/gi,'_').slice(0,85) + '_com_notas.pdf'; }
