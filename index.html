@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="dark" name="color-scheme"/>
+<title>NotaPDF Studio 2.3.0 — painel lateral retrátil</title>
+<link href="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/web/pdf_viewer.css" rel="stylesheet"/>
+<link href="./styles.css?v=2.3.0-same-folder" rel="stylesheet"/>
+</head>
+<body class="dark-ui">
+<div class="app">
+
+<div class="workspace">
+<aside aria-hidden="false" aria-label="Ferramentas e documento" class="sidebar" id="control-sidebar"><div class="sidebar-inner"><div class="sidebar-brand"><a aria-label="NotaPDF Studio" class="brand" href="#"><span class="brand-mark">N<span class="brand-dot">•</span></span><span>NotaPDF <b>Studio</b></span></a><span class="sidebar-version">2.3.0</span></div><section class="panel-section panel-files"><h2 class="panel-section-title">ARQUIVOS</h2><div class="sidebar-action-grid"><label class="btn btn-primary sidebar-open-pdf" for="pdf-input" title="Abrir um documento PDF">↥   Abrir PDF</label><input accept="application/pdf,.pdf" hidden="" id="pdf-input" type="file"/><button class="btn btn-outline sidebar-new-note" disabled="" id="btn-add">＋ Nova nota</button><button class="btn btn-save sidebar-save-pdf" disabled="" id="btn-export">↓   Salvar PDF</button></div><p class="direct-text-sidebar-tip">Texto no corpo do PDF: botão direito na página; selecione palavras para negrito, cor e destaque amarelo.</p></section><section class="panel-section panel-document"><h2 class="panel-section-title">DOCUMENTO</h2><div class="side-head"><span>DOCUMENTO</span><span id="file-size"></span></div><div class="doc-identity"><div class="doc-icon">PDF</div><div><strong id="file-name">Nenhum documento</strong><small id="doc-detail">Abra um PDF para começar</small></div></div></section><section class="panel-section panel-pages"><h2 class="panel-section-title">PÁGINAS</h2><div class="nav-group sidebar-page-nav"><button class="tool-btn" disabled="" id="prev-page" title="Página anterior">‹</button><label class="sr-only" for="page-number">Página</label><input aria-label="Ir para página; digite o número e pressione Enter" autocomplete="off" disabled="" id="page-number" inputmode="numeric" min="1" pattern="[0-9]*" type="text" value="1"/><span id="total-pages">/ —</span><button class="tool-btn" disabled="" id="next-page" title="Próxima página">›</button></div><div class="viewer-center"><span class="live-dot"></span><span id="viewer-label">Visualizador PDF</span></div></section><section class="panel-section panel-view"><h2 class="panel-section-title">VISUALIZAÇÃO</h2><div class="side-zoom-row"><div class="nav-group sidebar-zoom-group"><button class="tool-btn" disabled="" id="zoom-out" title="Diminuir zoom">−</button><input id="zoom-label" class="zoom-percent-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="100%" disabled aria-label="Percentual de zoom; clique, digite o número e pressione Enter" title="Clique para digitar um percentual de zoom (35% a 275%)"/><button class="tool-btn" disabled="" id="zoom-in" title="Aumentar zoom">＋</button><button class="tool-btn compact" disabled="" id="fit-width" title="Ajustar à largura">↔</button><button class="tool-btn" id="btn-fullscreen" title="Modo tela cheia" type="button">⛶</button></div></div><div class="side-view-options"><span class="side-view-label">Seleção de texto</span><button aria-pressed="true" class="tool-btn select-text-btn active" id="btn-select-text" title="Selecionar texto (ativo)" type="button">I</button></div></section><section class="panel-section panel-marks"><h2 class="panel-section-title">MARCAÇÕES</h2><div aria-label="Ferramentas de marcação" class="markup-tools">
+<label title="Grifo primário (Alt/Option+C)">Azul <input id="mark-primary" type="color" value="#baf6ff"/></label>
+<button class="tool-btn mark-action" id="mark-blue" title="Grifar seleção (Alt/Option+C)">▰</button>
+<label title="Grifo secundário (Alt/Option+V)">Amarelo <input id="mark-secondary" type="color" value="#ffeaa7"/></label>
+<button class="tool-btn mark-action" id="mark-yellow" title="Grifar seleção (Alt/Option+V)">▰</button>
+<label title="Cor do sublinhado (Alt/Option+B)">Linha <input id="mark-underline-color" type="color" value="#ff0000"/></label>
+<button class="tool-btn mark-action" id="mark-underline" title="Sublinhar seleção (Alt/Option+B)">U̲</button>
+<label class="solid-shortcuts-toggle" for="solid-shortcuts" title="Marque para usar destaque sólido com Alt/Option+C/V e em todas as cores da barra rápida. Desmarque para restaurar o grifo comum em todas as cores.">
+<input aria-label="Usar destaque sólido nos atalhos Alt+C e Alt+V e em todas as cores da barra rápida" id="solid-shortcuts" type="checkbox"> <span>C/V sólido</span>
+</input></label>
+<label class="solid-shortcuts-toggle quick-toolbar-toggle" for="quick-toolbar-enabled" title="Exibir três botões rápidos acima do cursor após selecionar texto por arraste ou duplo clique. Desmarque para manter apenas a seleção.">
+<input aria-label="Ativar barra rápida ao selecionar texto" id="quick-toolbar-enabled" type="checkbox"> <span>Barra rápida</span>
+</input></label>
+<label class="mark-opacity-control" for="mark-opacity" title="Ajusta os próximos grifos; o padrão é 42%">Opacidade
+      <input aria-label="Opacidade dos próximos grifos comuns" id="mark-opacity" max="100" min="10" step="1" type="range" value="42">
+<output for="mark-opacity" id="mark-opacity-value">42%</output>
+<span class="mark-opacity-preview" id="mark-opacity-preview" title="Prévia do grifo sobre cinza"></span>
+</input></label>
+</div></section><section class="panel-section panel-actions"><h2 class="panel-section-title">AÇÕES E APARÊNCIA</h2><div class="side-utility-row"><button class="btn btn-outline" disabled="" id="btn-undo" title="Desfazer (Ctrl+Z / ⌘Z)">↶</button><button class="btn btn-outline" disabled="" id="btn-redo" title="Refazer (Ctrl+Y)">↷</button><button class="btn btn-outline" id="btn-dark" title="Alternar para modo claro">☀</button></div></section><section class="panel-section panel-notes"><h2 class="panel-section-title">ANOTAÇÕES DA PÁGINA</h2><div class="side-head"><span>ANOTAÇÕES DA PÁGINA</span><span id="notes-count">0</span></div><div class="note-list" id="note-list"><div class="empty-notes">As novas notas serão listadas aqui.</div></div></section><div class="side-footer-status"><span id="status-text">Pronto para abrir um documento.</span><span id="status-extra">NotaPDF Studio 2.3.0 · GitHub Pages · 100% local</span><div class="sidebar-footer">Os arquivos são processados localmente no navegador. Eles não são enviados ao GitHub.</div></div></div></aside><button aria-controls="control-sidebar" aria-expanded="true" aria-label="Ocultar barra lateral de ferramentas" class="sidebar-collapse-toggle" id="sidebar-toggle" title="Recolher barra lateral" type="button"><span aria-hidden="true" class="sidebar-toggle-symbol">☰</span></button>
+<main class="main">
+
+<div class="viewport-scroll" id="viewport-scroll">
+<div class="empty-state" id="empty-state"><div class="empty-visual"><span>▤</span><i>＋</i></div><h1>Seus PDFs, suas notas e textos.</h1><p>Use notas interativas ou clique com o botão direito na página para inserir texto permanente. Exporte mantendo os comentários originais.</p><label class="btn btn-primary btn-large" for="pdf-input">↥   Escolher PDF</label><small>PDFs extensos são permitidos, mas a exportação pode consumir bastante memória.</small></div>
+<div class="pdf-stage hidden" id="pdf-stage"><div class="page-container" id="page-container"><canvas id="pdf-canvas"></canvas><div class="textLayer" id="text-layer"></div><div aria-hidden="true" class="pdf-selection-layer" id="pdf-selection-layer"></div><div class="burned-marks-layer" id="burned-marks-layer"></div><div class="existing-layer" id="existing-layer"></div><div class="notes-layer" id="notes-layer"></div><div aria-label="Caixas de texto incorporadas ao PDF" class="direct-text-layer" id="direct-text-layer"></div><div class="placement-layer" id="placement-layer" title="Clique para posicionar a nota"></div><div aria-live="polite" class="placement-hint hidden" id="placement-hint">Clique na página para posicionar a nota · Esc cancela</div></div><nav class="bottom-page-nav" id="bottom-page-nav" aria-label="Navegação ao final da página"><button id="bottom-prev-page" class="bottom-page-button" type="button" title="Página anterior" aria-label="Ir para a página anterior" disabled>‹ <span>Página anterior</span></button><button id="bottom-next-page" class="bottom-page-button" type="button" title="Próxima página" aria-label="Ir para a próxima página" disabled><span>Próxima página</span> ›</button></nav></div>
+</div>
+
+</main>
+</div>
+</div>
+<nav aria-label="Navegação entre páginas em tela cheia" class="fullscreen-navigation" id="fullscreen-navigation">
+<button aria-label="Página anterior" disabled="" id="fs-prev-page" title="Página anterior" type="button">‹</button>
+<button aria-label="Próxima página" disabled="" id="fs-next-page" title="Próxima página" type="button">›</button>
+</nav>
+<div aria-label="Menu de ferramentas em tela cheia" class="fullscreen-tools" id="fullscreen-tools">
+<button aria-expanded="false" aria-label="Abrir ferramentas" class="fullscreen-menu-toggle" id="fullscreen-menu-toggle" title="Ferramentas" type="button">⋮</button>
+<div aria-label="Ferramentas do documento" class="fullscreen-menu" id="fullscreen-menu" role="toolbar">
+<button id="fs-select-text" title="Selecionar texto" type="button">I <span>Selecionar texto</span></button>
+<button id="fs-add-note" title="Nova nota" type="button">＋ <span>Nova nota</span></button>
+<button id="fs-mark-primary" title="Grifo primário · Alt/Option+C" type="button"><span class="fs-color-swatch primary"></span><span>Grifo azul</span></button>
+<button id="fs-mark-secondary" title="Grifo secundário · Alt/Option+V" type="button"><span class="fs-color-swatch secondary"></span><span>Grifo amarelo</span></button>
+<label class="fs-solid-shortcuts-toggle" for="fs-solid-shortcuts" title="Marque para usar destaque sólido em Alt/Option+C/V e em todas as cores da barra rápida; desmarque para voltar ao grifo comum.">
+<input aria-label="Usar destaque sólido nos atalhos Alt+C e Alt+V e em todas as cores da barra rápida em tela cheia" id="fs-solid-shortcuts" type="checkbox"/> <span>C/V: destaque sólido</span>
+</label>
+<label class="fs-solid-shortcuts-toggle fs-quick-toolbar-toggle" for="fs-quick-toolbar-enabled" title="Ativar barra rápida após arrastar ou dar duplo clique em palavras.">
+<input aria-label="Ativar barra rápida em tela cheia" id="fs-quick-toolbar-enabled" type="checkbox"/> <span>Barra rápida após seleção</span>
+</label>
+<button id="fs-mark-underline" title="Sublinhar · Alt/Option+B" type="button"><span class="fs-underline-symbol">U̲</span><span>Sublinhar</span></button>
+<label class="fs-opacity-control" for="fs-mark-opacity">Opacidade dos próximos grifos comuns
+    <span><input aria-label="Opacidade em tela cheia" id="fs-mark-opacity" max="100" min="10" step="1" type="range" value="42"/><output for="fs-mark-opacity" id="fs-mark-opacity-value">42%</output></span>
+</label>
+<button id="fs-exit" title="Sair da tela cheia" type="button">⤢ <span>Sair da tela cheia</span></button>
+</div>
+</div>
+<!-- Quick color palette: fixed extra colors are exclusive to this floating toolbar. -->
+<div aria-label="Paleta rápida de marcação do texto selecionado" class="quick-mark-toolbar hidden" id="quick-mark-toolbar" role="toolbar">
+<div aria-label="Cores adicionais" class="quick-mark-row quick-mark-row-top" role="group">
+<button aria-label="Aplicar grifo laranja" class="quick-mark-btn" id="quick-mark-orange" title="Grifo laranja · RGB 255, 210, 173" type="button"><span aria-hidden="true" class="quick-mark-swatch"></span></button>
+<button aria-label="Aplicar grifo amarelo vivo" class="quick-mark-btn" id="quick-mark-bright-yellow" title="Grifo amarelo vivo · RGB 255, 247, 0" type="button"><span aria-hidden="true" class="quick-mark-swatch"></span></button>
+<button aria-label="Aplicar grifo roxo" class="quick-mark-btn" id="quick-mark-purple" title="Grifo roxo · RGB 230, 184, 255" type="button"><span aria-hidden="true" class="quick-mark-swatch"></span></button>
+</div>
+<div aria-label="Cores principais e sublinhado" class="quick-mark-row quick-mark-row-bottom" role="group">
+<button aria-label="Aplicar grifo azul usando a cor primária" class="quick-mark-btn" id="quick-mark-primary" title="Grifo azul · cor primária do menu" type="button"><span aria-hidden="true" class="quick-mark-swatch"></span></button>
+<button aria-label="Aplicar grifo amarelo usando a cor secundária" class="quick-mark-btn" id="quick-mark-secondary" title="Grifo amarelo · cor secundária do menu" type="button"><span aria-hidden="true" class="quick-mark-swatch"></span></button>
+<button aria-label="Aplicar sublinhado vermelho" class="quick-mark-btn" id="quick-mark-underline" title="Sublinhar · cor do sublinhado do menu · Alt/Option+B" type="button"><span aria-hidden="true" class="quick-mark-underline">U̲</span></button>
+<button aria-label="Aplicar grifo verde" class="quick-mark-btn" id="quick-mark-green" title="Grifo verde · RGB 174, 255, 163" type="button"><span aria-hidden="true" class="quick-mark-swatch"></span></button>
+<button aria-label="Aplicar grifo vermelho" class="quick-mark-btn" id="quick-mark-red" title="Grifo vermelho · RGB 255, 189, 189" type="button"><span aria-hidden="true" class="quick-mark-swatch"></span></button>
+</div>
+</div>
+<div class="dialog-backdrop hidden" id="dialog-backdrop">
+<section aria-labelledby="editor-heading" aria-modal="true" class="editor-dialog" role="dialog">
+<header class="editor-head"><div><span class="kicker">EDITOR AVANÇADO</span><h2 id="editor-heading">Nova nota</h2></div><button class="icon-btn" id="editor-close" title="Fechar">✕</button></header>
+<div class="editor-main">
+<div class="editor-column">
+<label class="field-label" for="note-title">Título da anotação</label><input class="field" id="note-title" maxlength="100" value="Nota explicativa"/>
+<div class="field-label toolbar-label">Conteúdo da nota <span>Selecione o texto para aplicar a formatação. PDF: Alt/Option+C grifo azul · Alt/Option+V amarelo · Alt/Option+B sublinhado vermelho</span></div>
+<div class="rich-toolbar" id="rich-toolbar">
+<select id="font-family" title="Fonte"><option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="'Times New Roman'">Times New Roman</option><option value="Verdana">Verdana</option><option value="Courier New">Courier New</option></select>
+<select id="font-size" title="Tamanho"><option value="7px">7</option><option value="8px">8</option><option value="9px">9</option><option value="10px">10</option><option value="12px">12</option><option selected="" value="14px">14</option><option value="16px">16</option><option value="18px">18</option><option value="24px">24</option><option value="32px">32</option></select>
+<button data-cmd="bold" title="Negrito (Ctrl+B)"><b>B</b></button><button data-cmd="italic" title="Itálico (Ctrl+I)"><i>I</i></button><button data-cmd="underline" title="Sublinhado (Ctrl+U)"><u>U</u></button><button data-cmd="strikeThrough" title="Tachado"><s>S</s></button>
+<div class="editor-color-control" data-color-kind="text">
+<button class="editor-color-apply" id="text-color-apply" title="Aplicar a última cor do texto" type="button"><span class="editor-color-symbol">A</span><span class="editor-color-indicator" id="text-color-indicator" style="background:#000000"></span></button>
+<button aria-controls="text-color-palette" aria-expanded="false" aria-label="Escolher cor do texto" class="editor-color-toggle" id="text-color-toggle" title="Abrir paleta de cores" type="button">▾</button>
+<div aria-label="Paleta de cores do texto" class="editor-color-palette hidden" id="text-color-palette" role="group"></div>
+</div>
+<div class="editor-color-control" data-color-kind="highlight">
+<button class="editor-color-apply" id="highlight-color-apply" title="Repetir a última cor do marca-texto" type="button"><span class="editor-color-symbol">◧</span><span class="editor-color-indicator" id="highlight-color-indicator" style="background:#fff1a8"></span></button>
+<button aria-controls="highlight-color-palette" aria-expanded="false" aria-label="Escolher cor do marca-texto" class="editor-color-toggle" id="highlight-color-toggle" title="Abrir paleta de cores" type="button">▾</button>
+<div aria-label="Paleta do marca-texto" class="editor-color-palette hidden" id="highlight-color-palette" role="group"></div>
+</div>
+<label class="toolbar-control-label" for="line-spacing">Entre linhas
+      <select aria-label="Espaçamento entre linhas" id="line-spacing" title="Espaçamento entre linhas da nota">
+<option selected="" value="1">Simples · 1,0</option><option value="1.15">1,15</option><option value="1.5">1,5</option><option value="2">Duplo · 2,0</option>
+</select>
+</label>
+<label class="toolbar-control-label" for="paragraph-spacing">Após parágrafo
+      <select aria-label="Espaçamento após parágrafo" id="paragraph-spacing" title="Espaço após cada parágrafo">
+<option selected="" value="0">Nenhum</option><option value="4">Pequeno · 4 px</option><option value="8">Maior · 8 px</option>
+</select>
+</label>
+<button data-cmd="justifyLeft" title="Alinhar à esquerda">☰</button><button data-cmd="justifyCenter" title="Centralizar">≡</button><button data-cmd="justifyRight" title="Alinhar à direita">☷</button>
+<button data-cmd="insertUnorderedList" title="Lista">☷•</button><button data-cmd="insertOrderedList" title="Lista numerada">1.</button>
+<button id="insert-table" title="Inserir tabela 2 × 2">▦</button><button id="insert-image" title="Inserir imagem">▣</button><button id="insert-rule" title="Inserir linha horizontal">―</button>
+<button data-cmd="undo" title="Desfazer (Ctrl+Z / ⌘Z)">↶</button><button data-cmd="redo" title="Refazer (Ctrl+Y)">↷</button>
+</div>
+<div class="rich-editor" contenteditable="true" data-placeholder="Digite o texto da anotação. Insira imagens e tabelas pela barra acima..." id="rich-editor" spellcheck="true"></div>
+<input accept="image/png,image/jpeg,image/webp,image/gif" hidden="" id="image-input" type="file"/>
+<div class="edit-hint">Clique na imagem inserida e arraste a alça azul no canto inferior direito para redimensioná-la. Também é possível editar células de tabelas.</div>
+</div>
+<aside class="settings-column">
+<h3>Aparência do pop-up</h3>
+<label class="field-label" for="note-bg">Cor de fundo</label><input class="color-wide" id="note-bg" type="color" value="#fffdf4"/>
+<label class="field-label" for="note-border">Cor da borda</label><input class="color-wide" id="note-border" type="color" value="#c7b18a"/>
+<label class="field-label" for="popup-width">Largura <output id="width-out">340 px</output></label><input id="popup-width" max="520" min="200" step="10" type="range" value="340"/>
+<div class="settings-help"><b>Altura automática</b><p>A nota cresce conforme o conteúdo até o limite da página. Se ultrapassar esse espaço, a rolagem acontece dentro da própria nota.</p></div>
+<div class="field-label">Acionamento</div><label class="option"><input checked="" id="trigger-hover" type="checkbox"/> Abrir ao passar o mouse</label><label class="option"><input checked="" id="trigger-click" type="checkbox"/> Fixar ao clicar</label>
+<div class="settings-help"><b>Compatibilidade</b><p>O visual completo é preservado como imagem na aparência do campo PDF; a estrutura editável fica registrada no documento para reedição neste site. Os eventos JavaScript são projetados para Adobe Acrobat no computador.</p></div>
+</aside>
+</div>
+<footer class="dialog-actions"><button class="btn btn-danger hidden" id="note-delete">Excluir nota</button><div class="spacer"></div><button class="btn btn-outline" id="note-cancel">Cancelar</button><button class="btn btn-primary" id="note-save">✓ Salvar nota</button></footer>
+</section>
+</div>
+<div aria-live="polite" id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="./app.js?v=2.3.0-same-folder" type="module"></script>
+</body>
+</html>
